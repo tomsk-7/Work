@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Apertura & Ticketing V1",
+  "version": "12.0",
+  "author": "Tomas Ruiz Serrano",
+  "description": "Form automation and ticketing tools",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardRead",
+    "storage",
+    "commands",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://api.macvendors.com/*",
+    "https://api.maclookup.app/*",
+    "https://macvendors.co/*",
+    "https://numeracionyoperadores.cnmc.es/*",
+    "https://raw.githubusercontent.com/*",
+    "https://cdn.jsdelivr.net/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "run-obr-apertura": {
+      "suggested_key": {
+        "default": "Ctrl+Q"
+      },
+      "description": "Run the OBR Apertura script"
+    },
+    "fill-arconte-clipboard": {
+      "suggested_key": {
+        "default": "Ctrl+B"
+      },
+      "description": "Rellenar formulario Remedy desde portapapeles (WO)"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

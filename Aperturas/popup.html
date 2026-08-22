@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apertura & Ticketing</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Phosphor Icons CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body class="bg-custom">
+
+  <main class="container-fluid p-2">
+    <!-- Header Title & Author -->
+    <div class="d-flex justify-content-between align-items-center mb-2 px-1 pb-1 border-bottom border-secondary border-opacity-25">
+      <div class="fw-bold text-warning d-flex align-items-center" style="font-size: 13px;">
+        <i class="ph ph-lightning me-1"></i>Apertura & Ticketing
+      </div>
+      <div class="small" style="font-size: 11px; color: var(--accent-blue); font-weight: 600;">
+        <i class="ph ph-user me-1"></i>Tomas Ruiz Serrano
+      </div>
+    </div>
+
+    <!-- Módulo Aislado de Inventariado -->
+    <section class="mb-2">
+      <div class="p-2" style="background: rgba(245, 175, 78, 0.08); border: 1px solid rgba(245, 175, 78, 0.25); border-radius: 8px;">
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-bold" style="font-size: 11px; color: #f5af4e;"><i class="ph ph-package me-1"></i>Inventariado (Módulo Aislado)</span>
+          <button class="btn btn-sm btn-tool px-2 py-0" data-target="overlay-inventario" style="background: #f5af4e !important; color: #141210 !important; font-weight: 700; border: none !important; height: 24px;">
+            <i class="ph ph-cpu me-1"></i>ABRIR MODULO
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workspace Menu -->
+    <section class="mb-2">
+      <div class="section-header">
+        <div class="section-title">Workspace & KB</div>
+        <div class="divider"></div>
+      </div>
+      <div class="row row-cols-4 g-1">
+        <div class="col">
+          <button class="btn w-100 nav-btn" data-target="overlay-config-tel">
+            <i class="ph ph-sliders icon" style="color: #fbbf24;"></i>
+            <span class="small" style="font-size: 9px !important;">CONFIG TEL</span>
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 nav-btn" data-target="overlay-kb">
+            <i class="ph ph-books icon text-green"></i>
+            <span class="small">KB</span>
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 nav-btn" data-target="overlay-links">
+            <i class="ph ph-link icon text-purple"></i>
+            <span class="small">LINKS</span>
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 nav-btn" data-target="overlay-search">
+            <i class="ph ph-magnifying-glass icon text-rose"></i>
+            <span class="small">BUSCAR</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Snippets Summary -->
+    <section class="mb-2">
+      <div class="section-header">
+        <div class="section-title"><i class="ph ph-lightning me-1" style="color:#fbbf24;"></i>Snippets</div>
+        <div class="divider"></div>
+      </div>
+      <div id="snippet-summary-grid" class="snippet-summary-grid"></div>
+    </section>
+
+    <!-- Soporte Tools -->
+    <section class="mb-2">
+      <div class="section-header">
+        <div class="section-title">Herramientas Red</div>
+        <div class="divider"></div>
+      </div>
+      <div class="row row-cols-3 g-1 mb-1">
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-mac">
+            <i class="ph ph-router me-1 text-purple"></i>MAC
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-subredes">
+            <i class="ph ph-network me-1 text-green"></i>SUBNET
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-vlsm">
+            <i class="ph ph-tree-structure me-1 text-rose"></i>VLSM
+          </button>
+        </div>
+      </div>
+      <div class="row row-cols-3 g-1 mb-1">
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-diagcmd">
+            <i class="ph ph-terminal-window me-1 text-blue"></i>DIAG CMD
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-cnmc">
+            <i class="ph ph-arrows-left-right me-1 text-yellow"></i>CNMC
+          </button>
+        </div>
+        <div class="col">
+          <button class="btn w-100 btn-tool" data-target="overlay-q931">
+            <i class="ph ph-phone-call me-1 text-green"></i>ISDN / SIP
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Overlays -->
+
+    <!-- Inventario Overlay -->
+    <div id="overlay-inventario" class="overlay">
+      <div class="overlay-header mb-2">
+        <div class="section-title" style="color:#fbbf24;"><i class="ph ph-package me-1"></i> MODULO DE INVENTARIADO (WO)</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-hidden">
+        <!-- Live Reading Stats Mini Bar -->
+        <div class="d-flex justify-content-between align-items-center p-2 mb-2" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-size: 10.5px;">
+          <div><i class="ph ph-file-text me-1" style="color:#f5af4e;"></i>WOs: <b id="inv-wos" style="color:#f5af4e;">0</b></div>
+          <div><i class="ph ph-buildings me-1" style="color:#88d4a6;"></i>Codi SEU: <b id="inv-seus" style="color:#88d4a6;">0</b></div>
+          <div><i class="ph ph-desktop me-1" style="color:#cbb2e0;"></i>Hostnames: <b id="inv-hosts" style="color:#cbb2e0;">0</b></div>
+          <div><i class="ph ph-phone me-1" style="color:#ea8575;"></i>DDIs: <b id="inv-ddis" style="color:#ea8575;">0</b></div>
+        </div>
+
+        <!-- Quick Shortcut Tip -->
+        <div class="p-2 mb-2 text-center" style="background: rgba(245,175,78,0.08); border: 1px solid rgba(245,175,78,0.25); border-radius: 8px; font-size: 10.5px; color: #f5af4e;">
+          <i class="ph ph-keyboard me-1" style="font-size: 14px;"></i><b>Atajo directo en Remedy:</b> Pulsa <b style="background: rgba(245,175,78,0.2); padding: 1px 5px; border-radius: 4px;">CTRL + B</b> con la plantilla copiada.
+        </div>
+
+        <!-- Execution Buttons -->
+        <div class="d-flex flex-column gap-2 mb-2">
+          <button id="inv-btn-execute-popup" class="btn w-100" style="background: linear-gradient(135deg, #f5af4e 0%, #e09632 100%) !important; color: #141210 !important; font-weight: 800 !important; border: none !important; height: 36px; font-size: 11px;">
+            <i class="ph ph-lightning me-1" style="font-size: 16px;"></i> RELLENAR CRM DESDE PORTAPAPELES
+          </button>
+        </div>
+
+        <!-- Action Toolbar -->
+        <div class="d-flex gap-1 mb-2">
+          <button id="inv-btn-copy-template-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.35); color: #34d399;"><i class="ph ph-clipboard-text me-1"></i>Copiar Plantilla</button>
+          <button id="inv-btn-example-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px; background: rgba(245,175,78,0.15); border: 1px solid rgba(245,175,78,0.3); color: #f5af4e;"><i class="ph ph-lightbulb me-1"></i>Probar Ejemplo</button>
+          <button id="inv-btn-clear-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px;"><i class="ph ph-trash me-1"></i>Limpiar</button>
+          <button id="inv-btn-export-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px;"><i class="ph ph-download-simple me-1"></i>CSV</button>
+        </div>
+
+        <!-- Results Output Area -->
+        <div id="inv-output-popup" class="flex-grow-1 overflow-auto p-2" style="background: rgba(10, 9, 8, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-family: Consolas, monospace; font-size: 11px;">
+          <div class="text-center text-muted py-3 small">
+            <i class="ph ph-clipboard-text d-block fs-4 mb-1" style="opacity: 0.5;"></i>
+            Copia la plantilla WO al portapapeles y pulsa <b>CTRL+B</b> en Remedy o el botón de arriba.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay-search" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">BUSCAR EN ARCHIVOS</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <input type="file" id="folder-input" webkitdirectory directory style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none; visibility: hidden;">
+        <button id="select-folder-btn" class="btn w-100 mb-2"><i class="ph ph-folder-open me-2"></i> SELECCIONAR CARPETA</button>
+        <input type="text" id="search-query" placeholder="Palabra a buscar..." class="form-control mb-2">
+        <button id="start-search-btn" class="btn w-100 mb-3" style="background-color: rgba(96, 165, 250, 0.2) !important; border-color: var(--accent-blue) !important; color: #fff !important;">
+          <i class="ph ph-magnifying-glass me-2"></i> BUSCAR EN EQUIPO
+        </button>
+        
+        <div id="search-status" class="small text-muted mb-2 text-center"></div>
+        <div id="search-results" class="flex-grow-1 overflow-auto"></div>
+      </div>
+    </div>
+
+    <!-- Telephony Configs Overlay -->
+    <div id="overlay-config-tel" class="overlay">
+      <div class="overlay-header mb-1">
+        <div class="section-title" style="color:#fbbf24;"><i class="ph ph-sliders me-1"></i> CONFIGURACIONES TELEFONÍA</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-hidden">
+        <div class="p-2 mb-2" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+          <div class="row g-1 mb-1">
+            <div class="col-5">
+              <select id="config-tel-platform" class="form-select form-select-sm text-white bg-dark border-secondary" style="font-size: 10.5px; height: 28px;">
+                <option value="Alcatel OXE">Alcatel OXE</option>
+                <option value="Cisco CUCM">Cisco CUCM</option>
+                <option value="Huawei PBX">Huawei PBX</option>
+                <option value="Alisys">Alisys</option>
+                <option value="SBC / Trunk SIP">SBC / Trunk SIP</option>
+                <option value="General / Otros">General / Otros</option>
+              </select>
+            </div>
+            <div class="col-7">
+              <input type="text" id="config-tel-title" placeholder="Título (ej: Config Rango DDI)" class="form-control form-control-sm" style="font-size: 10.5px; height: 28px;">
+            </div>
+          </div>
+          <textarea id="config-tel-content" rows="2" class="form-control form-control-sm mb-1" style="min-height: 42px; max-height: 250px; font-family: Consolas, monospace; font-size: 10.5px; resize: vertical;" placeholder="Comandos / Parámetros..."></textarea>
+          <button id="save-config-tel-btn" class="btn btn-sm w-100" style="height: 26px; font-size: 10px !important; background-color: rgba(251, 191, 36, 0.2) !important; border-color: #fbbf24 !important; color: #fff !important;">
+            <i class="ph ph-floppy-disk me-1"></i> GUARDAR CONFIGURACIÓN
+          </button>
+        </div>
+        
+        <div class="category-title mb-1">CONFIGURACIONES GUARDADAS</div>
+        <div id="config-tel-list" class="flex-grow-1 overflow-auto pe-1"></div>
+      </div>
+    </div>
+
+    <div id="overlay-kb" class="overlay">
+      <div class="overlay-header mb-1">
+        <div class="section-title"><i class="ph ph-books me-1 text-green"></i> BASE DE CONOCIMIENTO</div>
+        <div class="d-flex align-items-center gap-1">
+          <button id="backup-export-btn" class="btn btn-tool py-0 px-2" style="font-size:10px; height:24px;" title="Exportar JSON"><i class="ph ph-download-simple me-1"></i>EXPORT</button>
+          <button id="backup-import-btn" class="btn btn-tool py-0 px-2" style="font-size:10px; height:24px;" title="Importar JSON"><i class="ph ph-upload-simple me-1"></i>IMPORT</button>
+          <input type="file" id="backup-file-input" accept=".json" style="display:none;">
+          <div class="back-btn"><i class="ph ph-x"></i></div>
+        </div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-hidden">
+        <div class="p-2 mb-2" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
+          <div class="row g-1 mb-1">
+            <div class="col-5">
+              <input type="text" id="note-tag" placeholder="TAG (ej: PRI, OSV)" class="form-control form-control-sm" style="font-size: 10.5px; height: 28px;">
+            </div>
+            <div class="col-7">
+              <button id="save-note-btn" class="btn btn-sm w-100" style="height: 28px; font-size: 10.5px !important; background-color: rgba(52, 211, 153, 0.2) !important; border-color: var(--accent-green) !important; color: #fff !important;">
+                <i class="ph ph-floppy-disk me-1"></i> GUARDAR NOTA KB
+              </button>
+            </div>
+          </div>
+          <textarea id="note-content" rows="2" class="form-control form-control-sm" style="min-height: 42px; max-height: 250px; font-size: 10.5px; resize: vertical;" placeholder="Contenido de la nota de conocimiento..."></textarea>
+        </div>
+
+        <div class="category-title mb-1">NOTAS GUARDADAS POR CATEGORÍA</div>
+        <div id="kb-dynamic-list" class="flex-grow-1 overflow-auto pe-1">
+          <!-- Notes grouped by tag will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay-links" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">LINKS RÁPIDOS</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">Gestiona tus enlaces</span>
+        <button id="add-new-category-btn" class="btn btn-sm" style="height: 30px; font-size: 10px !important;"><i class="ph ph-plus me-1"></i> NUEVA CATEGORÍA</button>
+      </div>
+
+      <div id="dynamic-links-container" class="overflow-auto flex-grow-1">
+        <!-- Dynamic link categories will appear here -->
+      </div>
+    </div>
+
+    <!-- Network Tool Overlays -->
+
+    <!-- MAC Vendor -->
+    <div id="overlay-mac" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">MAC VENDOR LOOKUP</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100">
+        <p class="small text-muted mb-2">Identifica el fabricante de un dispositivo a partir de su dirección MAC.</p>
+        <input type="text" id="mac-input" class="form-control mb-2" placeholder="Dirección MAC (ej: 00:1A:2B:3C:4D:5E)">
+        <button id="mac-search-btn" class="btn w-100 mb-3" style="background-color: rgba(167, 139, 250, 0.2) !important; border-color: var(--accent-purple) !important; color: #fff !important;">
+          <i class="ph ph-magnifying-glass me-2"></i> BUSCAR FABRICANTE
+        </button>
+        <div id="mac-result" class="kb-item text-center fw-bold" style="display:none;"></div>
+      </div>
+    </div>
+
+
+
+    <!-- Calculadora de Subredes -->
+    <div id="overlay-subredes" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">CALCULADORA SUBREDES</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Soporta notación CIDR (ej: <code>192.168.1.0/24</code>) o Máscara (ej: <code>192.168.1.0 255.255.255.0</code>).</p>
+        <input type="text" id="subnet-input" class="form-control mb-2" placeholder="IP/CIDR o IP Máscara (ej: 10.0.0.1 255.255.255.192)">
+        <button id="subnet-calc-btn" class="btn w-100 mb-3" style="background-color: rgba(52, 211, 153, 0.2) !important; border-color: var(--accent-green) !important; color: #fff !important;">
+          <i class="ph ph-calculator me-2"></i> CALCULAR
+        </button>
+        <div id="subnet-result" class="overflow-auto" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Calculadora VLSM -->
+    <div id="overlay-vlsm" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">CALCULADORA VLSM</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Acepta la red base en formato CIDR (<code>/24</code>) o Máscara (<code>255.255.255.0</code>).</p>
+        <input type="text" id="vlsm-network" class="form-control mb-2" placeholder="Red base (ej: 192.168.1.0/24 o 192.168.1.0 255.255.255.0)">
+        <textarea id="vlsm-hosts" class="form-control mb-2" rows="3" placeholder="Hosts por subred, uno por línea:&#10;50&#10;25&#10;10&#10;5"></textarea>
+        <button id="vlsm-calc-btn" class="btn w-100 mb-3" style="background-color: rgba(251, 113, 133, 0.2) !important; border-color: var(--accent-rose) !important; color: #fff !important;">
+          <i class="ph ph-tree-structure me-2"></i> CALCULAR VLSM
+        </button>
+        <div id="vlsm-result" class="overflow-auto" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Generador de Comandos de Diagnóstico -->
+    <div id="overlay-diagcmd" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title">COMANDOS DIAGNÓSTICO</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Genera comandos de prueba (Ping, Port, MTU) listos para copiar según el sistema.</p>
+        <input type="text" id="diag-ip" class="form-control mb-2" placeholder="IP / Host objetivo (ej: 10.200.1.1)">
+        <div class="row g-2 mb-2">
+          <div class="col-6">
+            <input type="number" id="diag-port" class="form-control" placeholder="Puerto (ej: 5060, 80)">
+          </div>
+          <div class="col-6">
+            <input type="number" id="diag-mtu" class="form-control" placeholder="MTU / Size (ej: 1472)">
+          </div>
+        </div>
+        <button id="diag-gen-btn" class="btn w-100 mb-3" style="background-color: rgba(96, 165, 250, 0.2) !important; border-color: var(--accent-blue) !important; color: #fff !important;">
+          <i class="ph ph-terminal-window me-2"></i> GENERAR COMANDOS
+        </button>
+        <div id="diag-result" class="overflow-auto" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Consultor Portabilidad CNMC (Fijo & Móvil) -->
+    <div id="overlay-cnmc" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title"><i class="ph ph-arrows-left-right me-1 text-yellow"></i> PORTABILIDAD CNMC</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Identifica tipo de numeración, rango geográfico/operador y consulta directa CNMC.</p>
+        <input type="text" id="cnmc-phone-input" class="form-control mb-2" placeholder="Número de teléfono (ej: 912345678 o 612345678)">
+        <button id="cnmc-search-btn" class="btn w-100 mb-3" style="background-color: rgba(251, 191, 36, 0.2) !important; border-color: #fbbf24 !important; color: #fff !important;">
+          <i class="ph ph-magnifying-glass me-2"></i> CONSULTAR NUMERACIÓN
+        </button>
+        <div id="cnmc-result" class="overflow-auto" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Decodificador de Causas ISDN Q.931 / SIP -->
+    <div id="overlay-q931" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title"><i class="ph ph-phone-call me-1 text-green"></i> CAUSAS ISDN Q.931 / SIP</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Introduce la causa ISDN PRI E1 (ej: 34, 16, 17, 31, 47) o respuesta SIP (404, 503) para ver origen y texto de cierre.</p>
+        <input type="text" id="q931-input" class="form-control mb-2" placeholder="Código de Causa (ej: 34, 16, 17, 31, 404, 503)">
+        <button id="q931-decode-btn" class="btn w-100 mb-3" style="background-color: rgba(52, 211, 153, 0.2) !important; border-color: var(--accent-green) !important; color: #fff !important;">
+          <i class="ph ph-code me-2"></i> DECODIFICAR CAUSA
+        </button>
+        <div id="q931-result" class="overflow-auto" style="display:none;"></div>
+      </div>
+    </div>
+
+
+
+    <div id="overlay-snippets" class="overlay">
+      <div class="overlay-header">
+        <div class="section-title"><i class="ph ph-lightning me-1" style="color: #fbbf24;"></i> SNIPPETS RÁPIDOS</div>
+        <div class="back-btn"><i class="ph ph-x"></i></div>
+      </div>
+      <div class="d-flex flex-column h-100 overflow-auto">
+        <p class="small text-muted mb-2">Escribe el atajo en <b>cualquier caja de texto</b> del CRM y pulsa <kbd style="background:rgba(255,255,255,0.1); border-radius:4px; padding:1px 5px; font-size:11px;">espacio</kbd> para expandirlo automáticamente. O cópialo con el botón.</p>
+
+        <!-- ── Manca & Config ── -->
+        <div class="category-title mb-1" style="color:var(--accent-blue)">Manca &amp; Config</div>
+
+        <!-- Snippet: CLI -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cli</code>
+            <span class="snippet-label">CLI Validation</span>
+            <button class="btn-snippet-copy" data-snippet="cli"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, si us plau, podeu comprovar que ja funciona correctament?...</div>
+        </div>
+
+        <!-- Snippet: VAL -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/val</code>
+            <span class="snippet-label">Validació configuració</span>
+            <button class="btn-snippet-copy" data-snippet="val"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, us informem que hem aplicat uns ajustos al sistema...</div>
+        </div>
+
+        <!-- Snippet: DIAG -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/diag</code>
+            <span class="snippet-label">Plantilla diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="diag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">DIAGNÒSTIC: / Inc: / Capçalera de la seu: / Persona de contacte: ...</div>
+        </div>
+
+        <!-- Snippet: SWAP / Phone Swap -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/swap</code>
+            <span class="snippet-label">Phone Swap – canvi punt xarxa</span>
+            <button class="btn-snippet-copy" data-snippet="swap"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per continuar necessitem que connectis el terminal a un altre punt de xarxa...</div>
+        </div>
+
+        <!-- Snippet: EX / Call Example -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/ex</code>
+            <span class="snippet-label">Call Example – sol·licitar exemples</span>
+            <button class="btn-snippet-copy" data-snippet="ex"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per analitzar la incidència necessitem exemples de trucades fallides...</div>
+        </div>
+
+        <!-- Snippet: CL / VoIP Call Drop -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cl</code>
+            <span class="snippet-label">VoIP Call Drop – cable auricular</span>
+            <button class="btn-snippet-copy" data-snippet="cl"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per descartar incidències del cable de l'auricular, feu les comprovacions...</div>
+        </div>
+
+        <!-- Snippet: NE37 / NEO3750 Unbootable -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/ne37</code>
+            <span class="snippet-label">NEO3750 Unbootable</span>
+            <button class="btn-snippet-copy" data-snippet="ne37"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per continuar necessitem: manteniu premuda la tecla vermella...</div>
+        </div>
+
+        <!-- Snippet: NE25 / DT250 Unbootable -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/ne25</code>
+            <span class="snippet-label">DT250 Unbootable</span>
+            <button class="btn-snippet-copy" data-snippet="ne25"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per continuar necessitem: manteniu premuda la tecla d'encesa...</div>
+        </div>
+
+        <!-- Snippet: INT37 / NEO3750 Noises -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/int37</code>
+            <span class="snippet-label">NEO3750 Noises – interferències</span>
+            <button class="btn-snippet-copy" data-snippet="int37"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, els talls de trucada sovint estan relacionats amb la cobertura...</div>
+        </div>
+
+        <!-- Snippet: VOL37 / NEO3750 Volume -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/vol37</code>
+            <span class="snippet-label">NEO3750 Volume</span>
+            <button class="btn-snippet-copy" data-snippet="vol37"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, per prosseguir necessitem: comproveu el volum i augmenteu-lo enmig de trucada...</div>
+        </div>
+
+        <!-- ── Closures ── -->
+        <div class="category-title mb-1 mt-2" style="color:var(--accent-rose)">Closures</div>
+
+        <!-- Snippet: COBR / Cierre OBR -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cobr</code>
+            <span class="snippet-label">Cierre OBR – visita tècnica</span>
+            <button class="btn-snippet-copy" data-snippet="cobr"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, el tècnic ha realitzat la visita i ha fet les actuacions pertinents...</div>
+        </div>
+
+        <!-- Snippet: CPLT / Cierre Plataforma -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cplt</code>
+            <span class="snippet-label">Cierre PLT – configuració plataforma</span>
+            <button class="btn-snippet-copy" data-snippet="cplt"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, s'han aplicat les configuracions a la plataforma i hem verificat que funciona...</div>
+        </div>
+
+        <!-- Snippet: NA / No Answer -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/na</code>
+            <span class="snippet-label">No Answer – tancament 5 dies</span>
+            <button class="btn-snippet-copy" data-snippet="na"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, com que no hem rebut resposta, tanquem el tiquet passats 5 dies...</div>
+        </div>
+
+        <!-- Snippet: DUP / Duplicado -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/dup</code>
+            <span class="snippet-label">Duplicado – tancament duplicat</span>
+            <button class="btn-snippet-copy" data-snippet="dup"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Benvolgut/da, aquest tiquet ha estat detectat com a duplicat...</div>
+        </div>
+
+        <!-- Snippet: PRI / PRI No SMC -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/pri</code>
+            <span class="snippet-label">PRI No SMC – canal operatiu</span>
+            <button class="btn-snippet-copy" data-snippet="pri"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, hem revisat el canal primari i es troba operatiu...</div>
+        </div>
+
+        <!-- Snippet: WO / Work Order -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/wo</code>
+            <span class="snippet-label">Work Order – derivar petició</span>
+            <button class="btn-snippet-copy" data-snippet="wo"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, el contingut no es gestiona com incidència sinó com petició...</div>
+        </div>
+
+        <!-- Snippet: OBS / Observación -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/obs</code>
+            <span class="snippet-label">Observació – fi del període</span>
+            <button class="btn-snippet-copy" data-snippet="obs"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">Bon dia, el període d'observació ha finalitzat sense incidències...</div>
+        </div>
+
+        <!-- ── Etiquetes & Herramientas ── -->
+        <div class="category-title mb-1 mt-2" style="color:var(--accent-yellow)">Etiquetes &amp; Eines</div>
+
+        <!-- Snippet: ALISYS -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/alisys</code>
+            <span class="snippet-label">Etiqueta #AAPP#ALISYS</span>
+            <button class="btn-snippet-copy" data-snippet="alisys"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">#AAPP#ALISYS</div>
+        </div>
+
+        <!-- Snippet: NETOPS -->
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/netops</code>
+            <span class="snippet-label">Etiqueta #AAPP#NETOPS</span>
+            <button class="btn-snippet-copy" data-snippet="netops"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">#AAPP#NETOPS</div>
+        </div>
+
+        <!-- Snippet: OSV (opens 2 URLs) -->
+        <div class="snippet-card mb-2" style="border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.05);">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag" style="color: #34d399;">/osv</code>
+            <span class="snippet-label">Abre 2 pestañas OSV</span>
+            <button class="btn-snippet-copy" id="osv-open-btn" title="Abrir las 2 URLs ahora"
+              style="background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.4);">
+              <i class="ph ph-arrow-square-out"></i>
+            </button>
+          </div>
+          <div class="snippet-preview" style="color: #34d399;">
+            <i class="ph ph-globe me-1"></i> Abre las 2 URLs en nuevas pestañas de Chrome
+          </div>
+        </div>
+
+        <!-- ── Vendor Tickets: OSV (OSV1 / OSV2) ── -->
+        <div class="category-title mb-1 mt-2" style="color:var(--accent-purple)">Vendor OSV (OSV1 / OSV2)</div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv1manca</code><span class="snippet-label">OSV1 Manca</span>
+            <button class="btn-snippet-copy" data-snippet="osv1manca"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV1 - 9 a 14 - CONF - MANCA</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv1diag</code><span class="snippet-label">OSV1 Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="osv1diag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV1 - 9 a 14 - CONF - DIAG</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv1tas</code><span class="snippet-label">OSV1 TAS Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="osv1tas"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV1 - 9 a 14 - CONF - TAS [Número]</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv1te</code><span class="snippet-label">OSV1 TE</span>
+            <button class="btn-snippet-copy" data-snippet="osv1te"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV1 - 9 a 14 - CONF - TE</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv1obr</code><span class="snippet-label">OSV1 OBR Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="osv1obr"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV1 - 9 a 14 - TA - OA OBR [Número]</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv2manca</code><span class="snippet-label">OSV2 Manca</span>
+            <button class="btn-snippet-copy" data-snippet="osv2manca"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV2 - 9 a 14 - CONF - MANCA</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv2diag</code><span class="snippet-label">OSV2 Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="osv2diag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV2 - 9 a 14 - CONF - DIAG</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv2tas</code><span class="snippet-label">OSV2 TAS Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="osv2tas"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV2 - 9 a 14 - CONF - TAS [Número]</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv2te</code><span class="snippet-label">OSV2 TE</span>
+            <button class="btn-snippet-copy" data-snippet="osv2te"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV2 - 9 a 14 - CONF - TE</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/osv2obr</code><span class="snippet-label">OSV2 OBR Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="osv2obr"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">OSV2 - 9 a 14 - TA - OA OBR [Número]</div>
+        </div>
+
+        <!-- ── Vendor Tickets: OXE / CS ── -->
+        <div class="category-title mb-1 mt-2 d-flex justify-content-between align-items-center" style="color:var(--accent-blue)">
+          <span>Vendor OXE / CS (CS01 - CS13)</span>
+        </div>
+        <div class="mb-2 d-flex flex-wrap gap-1">
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS01</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS02</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS03</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS04</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS05</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS07</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS08</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS10</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS11</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS12</span>
+          <span class="badge bg-secondary" style="font-family:Consolas,monospace;font-size:10px;background:rgba(59,130,246,0.2) !important;color:#60a5fa;border:1px solid rgba(59,130,246,0.3)">CS13</span>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01manca</code><span class="snippet-label">CS01 Manca</span>
+            <button class="btn-snippet-copy" data-snippet="cs01manca"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - CONF - MANCA</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01diag</code><span class="snippet-label">CS01 Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="cs01diag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - CONF - DIAG</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01tadiag</code><span class="snippet-label">CS01 TA Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="cs01tadiag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - TA - DIAG</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01tas</code><span class="snippet-label">CS01 TAS Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="cs01tas"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - CONF - TAS [Número]</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01tp</code><span class="snippet-label">CS01 TP</span>
+            <button class="btn-snippet-copy" data-snippet="cs01tp"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - CONF - TP</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cs01obr</code><span class="snippet-label">CS01 OBR Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="cs01obr"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CS01 - 9 a 14 - TA - OA OBR [Número]</div>
+        </div>
+
+        <!-- ── Vendor Tickets: SOC ── -->
+        <div class="category-title mb-1 mt-2" style="color:var(--accent-green)">Vendor SOC</div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/socsales</code><span class="snippet-label">SOC Sales</span>
+            <button class="btn-snippet-copy" data-snippet="socsales"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">SOC - 9 a 14 - CONF - OA SALES</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/socmanca</code><span class="snippet-label">SOC Manca</span>
+            <button class="btn-snippet-copy" data-snippet="socmanca"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">SOC - 9 a 14 - CONF - MANCA</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/socdiag</code><span class="snippet-label">SOC Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="socdiag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">SOC - 9 a 14 - CONF - DIAG</div>
+        </div>
+
+        <!-- ── Vendor Tickets: RIAV ── -->
+        <div class="category-title mb-1 mt-2" style="color:var(--accent-yellow)">Vendor RIAV</div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/riavmanca</code><span class="snippet-label">RIAV Manca</span>
+            <button class="btn-snippet-copy" data-snippet="riavmanca"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">RIAV - 9 a 14 - CONF - MANCA</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/riavdiag</code><span class="snippet-label">RIAV Diagnòstic</span>
+            <button class="btn-snippet-copy" data-snippet="riavdiag"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">RIAV - 9 a 14 - CONF - DIAG</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/riavtas</code><span class="snippet-label">RIAV TAS Ticket</span>
+            <button class="btn-snippet-copy" data-snippet="riavtas"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">RIAV - 9 a 14 - CONF - TAS [Número]</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/riavsales</code><span class="snippet-label">RIAV Sales</span>
+            <button class="btn-snippet-copy" data-snippet="riavsales"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">RIAV - 9 a 14 - CONF - OA SALES</div>
+        </div>
+        <div class="snippet-card mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <code class="snippet-tag">/cons</code><span class="snippet-label">Consulta Simple</span>
+            <button class="btn-snippet-copy" data-snippet="cons"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="snippet-preview">CONS</div>
+        </div>
+
+        <div class="mt-3 p-2" style="background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius:10px;">
+          <p class="small mb-1" style="color: #fbbf24;"><i class="ph ph-info me-1"></i> Com funciona?</p>
+          <p class="small text-muted mb-0">Obre qualsevol camp de text al CRM, escriu <b>/ex</b> i prem la <b>barra espaciadora</b>. El text s'expandirà automàticament.</p>
+        </div>
+      </div>
+
+    <!-- Footer -->
+    <footer class="mt-3 pt-2 pb-1 text-center border-top border-secondary border-opacity-25">
+      <span class="text-muted" style="font-size: 10px; letter-spacing: 0.3px;">
+        <i class="ph ph-code me-1" style="color: var(--accent-blue);"></i>Desarrollado por <b>Tomas Ruiz Serrano</b>
+      </span>
+    </footer>
+
+  </main>
+
+  <script src="Work/popup.js"></script>
+</body>
+</html>

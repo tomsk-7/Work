@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo de Inventariado - Apertura & Ticketing</title>
+  <!-- Phosphor Icons -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="inventario.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <i class="ph ph-package" style="font-size: 22px;"></i>
+      <span>Apertura & Ticketing</span>
+      <span class="brand-badge">Inventariado</span>
+    </div>
+    <div class="toolbar">
+      <button class="btn-cyber" id="btn-example">
+        <i class="ph ph-lightbulb"></i> Cargar Ejemplo
+      </button>
+      <button class="btn-cyber" id="btn-clear">
+        <i class="ph ph-trash"></i> Limpiar
+      </button>
+      <button class="btn-cyber" id="btn-open-extension" style="border-color: var(--accent-amber);">
+        <i class="ph ph-lightning" style="color: var(--accent-amber);"></i> Extensión
+      </button>
+    </div>
+  </header>
+
+  <div class="app-container">
+
+    <!-- Live Reading Stats Header -->
+    <section class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon lines"><i class="ph ph-rows"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-lines">0</span>
+          <span class="stat-label">Líneas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon chars"><i class="ph ph-text-t"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-chars">0</span>
+          <span class="stat-label">Caracteres</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon ips"><i class="ph ph-globe-hemisphere-west"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-ips">0</span>
+          <span class="stat-label">IPs Halladas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon macs"><i class="ph ph-cpu"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-macs">0</span>
+          <span class="stat-label">MACs Halladas</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon serials"><i class="ph ph-barcode"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="stat-serials">0</span>
+          <span class="stat-label">Series / SKUs</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-grid">
+
+      <!-- Left Panel: Input Area -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="ph ph-textbox"></i> Entrada de Texto de Inventario
+          </div>
+          <span class="stat-label" id="live-indicator" style="color: var(--accent-green);">
+            <i class="ph ph-circle-wavy-check"></i> Lectura activa
+          </span>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea 
+            id="inventory-input" 
+            class="inventory-textarea" 
+            placeholder="Pega o escribe aquí el texto del inventario...&#10;&#10;Ejemplo:&#10;Router Cisco C1111-8P - SN: FJC243109AX - IP: 192.168.1.1 - MAC: 00:1A:2B:3C:4D:5E&#10;Switch Catalyst 2960 - SN: FOC1845X291 - IP: 10.0.4.254&#10;Access Point AP505 - MAC: aa:bb:cc:dd:ee:ff"></textarea>
+        </div>
+
+        <!-- Execution Button -->
+        <div>
+          <button class="btn-cyber-primary" id="btn-execute">
+            <i class="ph ph-play-circle" style="font-size: 18px; vertical-align: middle; margin-right: 6px;"></i>
+            EJECUTAR PROCESAMIENTO DE INVENTARIO
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Panel: Output & Execution Results -->
+      <section class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="ph ph-cpu"></i> Resultados de Ejecución
+          </div>
+          <div class="toolbar">
+            <button class="btn-cyber" id="btn-copy-output">
+              <i class="ph ph-copy"></i> Copiar
+            </button>
+            <button class="btn-cyber" id="btn-export-csv">
+              <i class="ph ph-download-simple"></i> CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="output-box" id="output-container">
+          <div class="empty-state" id="empty-state">
+            <i class="ph ph-file-text"></i>
+            <div>
+              <strong>Esperando datos de inventario...</strong><br>
+              <span style="font-size: 11px;">Introduce texto a la izquierda y pulsa <strong>EJECUTAR PROCESAMIENTO</strong></span>
+            </div>
+          </div>
+          <div id="results-content" style="display: none;"></div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast-msg" id="toast">
+    <i class="ph ph-check-circle" style="color: var(--accent-green); font-size: 18px;"></i>
+    <span id="toast-text">Notificación</span>
+  </div>
+
+  <script src="inventario.js"></script>
+</body>
+</html>
