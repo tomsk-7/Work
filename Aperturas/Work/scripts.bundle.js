@@ -204,6 +204,8 @@
     const upper = text.trim().toUpperCase();
     if (upper.startsWith('CS')) return 'OXE';
     if (upper.startsWith('OSV')) return 'OSV';
+    if (upper.startsWith('RIAV')) return 'RIAV';
+    if (upper.startsWith('SOC')) return 'SOC';
     return '';
   };
 
