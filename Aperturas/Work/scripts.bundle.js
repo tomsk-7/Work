@@ -20,16 +20,38 @@
     const sfx = idOrSuffix.includes('_') ? idOrSuffix.split('_').pop() : idOrSuffix;
     const isVisible = el => el && (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0);
 
+    console.log(`[RemedyAutoFill] Searching for field with suffix/ID: "${idOrSuffix}" (sfx: "${sfx}")`);
+
     const searchInDoc = (doc) => {
       if (!doc) return { visible: null, fallback: null };
       
-      const candidates = Array.from(doc.querySelectorAll(`[id$="_${sfx}"], [id*="_${sfx}"], [id="${idOrSuffix}"]`));
-      let visible = candidates.find(isVisible);
-      let fallback = candidates[0] || null;
+      const selector = `textarea[id*="_${sfx}"], input[id*="_${sfx}"], select[id*="_${sfx}"], [id$="_${sfx}"], [id*="_${sfx}"], [id="${idOrSuffix}"], [name="${sfx}"]`;
+      let rawCandidates = Array.from(doc.querySelectorAll(selector));
+      
+      if (rawCandidates.length > 0) {
+        let candidates = rawCandidates.map(el => {
+          if (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return el;
+          return el.querySelector('textarea, input, select') || el;
+        });
 
-      if (visible) return { visible, fallback };
+        candidates = Array.from(new Set(candidates));
+
+        candidates.sort((a, b) => {
+          const aIsForm = ['INPUT', 'TEXTAREA', 'SELECT'].includes(a.tagName) ? 1 : 0;
+          const bIsForm = ['INPUT', 'TEXTAREA', 'SELECT'].includes(b.tagName) ? 1 : 0;
+          return bIsForm - aIsForm;
+        });
+
+        console.log(`[RemedyAutoFill] Candidates found for "${idOrSuffix}":`, candidates.map(c => `${c.tagName}#${c.id}`));
+
+        let visible = candidates.find(isVisible);
+        let fallback = candidates[0] || null;
+
+        if (visible) return { visible, fallback };
+      }
 
       // Search child iframes if no visible element in current document
+      let fallback = null;
       try {
         const frames = doc.querySelectorAll('iframe, frame');
         for (let i = 0; i < frames.length; i++) {
@@ -47,19 +69,44 @@
 
     try {
       const res = searchInDoc(document) || (window.top ? searchInDoc(window.top.document) : null);
-      return res ? (res.visible || res.fallback) : null;
+      const chosen = res ? (res.visible || res.fallback) : null;
+      if (chosen) {
+        console.log(`[RemedyAutoFill] Selected element for "${idOrSuffix}":`, chosen.tagName, chosen.id, chosen.className);
+        return chosen;
+      }
     } catch (e) { }
+
+    console.warn(`[RemedyAutoFill] Could NOT find element for suffix/ID: "${idOrSuffix}"`);
     return null;
   };
 
   const forceSetRemedyField = (idOrSuffix, value) => {
-    if (value === undefined || value === null || value === '') return false;
-    const el = findRemedyField(idOrSuffix);
-    if (!el) return false;
+    console.log(`[RemedyAutoFill] forceSetRemedyField called for "${idOrSuffix}" with value: "${value}"`);
+    if (value === undefined || value === null || value === '') {
+      console.warn(`[RemedyAutoFill] Value for "${idOrSuffix}" is empty/null/undefined`);
+      return false;
+    }
+    let el = findRemedyField(idOrSuffix);
+    if (!el) {
+      console.warn(`[RemedyAutoFill] forceSetRemedyField failed: field "${idOrSuffix}" not found`);
+      return false;
+    }
+
+    if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) {
+      const inner = el.querySelector('textarea, input, select');
+      if (inner) {
+        console.log(`[RemedyAutoFill] Resolved container ${el.tagName}#${el.id} -> ${inner.tagName}#${inner.id}`);
+        el = inner;
+      }
+    }
 
     const win = el.ownerDocument?.defaultView || window;
+    const prevVal = el.value;
 
     try { el.focus(); } catch(e) {}
+    if (el.hasAttribute('readonly')) {
+      try { el.removeAttribute('readonly'); } catch (e) {}
+    }
 
     if (el.tagName === 'SELECT') {
       let found = false;
@@ -76,8 +123,11 @@
         try { el.setAttribute('value', value); } catch(e) {}
       }
     } else {
+      // TEXTAREA or INPUT
       el.value = value;
-      try { el.setAttribute('value', value); } catch(e) {}
+      try { el.textContent = value; } catch (e) {}
+      try { el.innerText = value; } catch (e) {}
+      try { el.setAttribute('value', value); } catch (e) {}
     }
 
     ['focus', 'keydown', 'keypress', 'keyup', 'input', 'change', 'blur'].forEach(evtType => {
@@ -92,6 +142,20 @@
       } catch (e) { }
     });
 
+    try {
+      const sfx = String(idOrSuffix).split('_').pop();
+      [win, window, window.top].forEach(w => {
+        try {
+          if (w && typeof w.ARSetText === 'function') {
+            for (let winIdx = 0; winIdx <= 5; winIdx++) {
+              w.ARSetText(winIdx, sfx, value, 0);
+            }
+          }
+        } catch (e) {}
+      });
+    } catch (e) {}
+
+    console.log(`[RemedyAutoFill] Field "${idOrSuffix}" (${el.tagName}#${el.id}) set from "${prevVal}" -> "${el.value}"`);
     return true;
   };
 
@@ -135,27 +199,38 @@
     };
   };
 
-  const extractFirstVendorSegment = text => {
+  const extractVendorTypeFor5550 = text => {
     if (!text) return '';
-    const trimmed = text.trim();
-    const firstHyphenIdx = trimmed.indexOf('-');
-    let rawSegment = firstHyphenIdx !== -1 ? trimmed.substring(0, firstHyphenIdx) : trimmed;
-    return rawSegment.trim();
+    const upper = text.trim().toUpperCase();
+    if (upper.startsWith('CS')) return 'OXE';
+    if (upper.startsWith('OSV')) return 'OSV';
+    return '';
   };
 
-  const extractLastVendorSegment = text => {
+  const extractSegmentValue5549 = text => {
     if (!text) return '';
     const trimmed = text.trim();
     const lastHyphenIdx = trimmed.lastIndexOf('-');
-    let rawSegment = lastHyphenIdx !== -1 ? trimmed.substring(lastHyphenIdx + 1) : trimmed;
-    return rawSegment.replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+    if (lastHyphenIdx === -1) return '';
+    const afterHyphen = trimmed.substring(lastHyphenIdx + 1).trim();
+    const words = afterHyphen.split(/\s+/).filter(Boolean);
+    if (!words.length) return '';
+
+    const oaIdx = words.findIndex(w => w.toUpperCase() === 'OA');
+    if (oaIdx !== -1) {
+      if (oaIdx + 1 < words.length) {
+        return `${words[oaIdx]} ${words[oaIdx + 1]}`;
+      }
+      return words[oaIdx];
+    }
+
+    return words[words.length - 1];
   };
 
   const cleanVendorString = text => {
     if (!text) return text;
     let cleaned = text
-      .replace(/\bOSVI\b/gi, 'OSV1')
-      .replace(/\bOSV(?![\d\?])/gi, 'OSV?')
+      .replace(/\bOSV(?![12I\?])/gi, 'OSV?')
       .replace(/\bCONSULTA\b/gi, 'CONS')
       .replace(/\bCONF\s*-\s*OA\s+OBR\b/gi, 'TA - OA OBR')
       .replace(/\bCONF\s*-\s*OBR\b/gi, 'TA - OBR')
@@ -180,60 +255,81 @@
     getTierFieldVal('1000003889').includes('avaria') &&
     getTierFieldVal('1000003890').includes('substitució total');
 
+  let isFillingCategorization = false;
+
   const checkAndFillObrCategorization = text => {
-    if (!text) return;
-    const upper = text.toUpperCase();
-    // Detect TA - OA OBR / TA - DIAG / TA - MANCA patterns (requires TA prefix)
-    const hasTa = /\bTA\b/.test(upper);
-    const hasObrOrOntime = upper.includes('OBR') || upper.includes('ONTIME');
-    const hasTaDiag = hasTa && upper.includes('DIAG');
-    const hasTaManca = hasTa && upper.includes('MANCA');
-    const hasAa = upper.includes('AA');
-    const hasConf = upper.includes('CONF') || upper.includes('MANCA') || upper.includes('DIAG') || upper.includes('TAS') || upper.includes('TE') || upper.includes('TP') || upper.includes('SALES');
-    const hasCons = upper.includes('CONS');
+    if (isFillingCategorization) return;
+    isFillingCategorization = true;
+    console.log('[RemedyAutoFill] Running checkAndFillObrCategorization with text:', text);
+    try {
+      if (!text) {
+        console.warn('[RemedyAutoFill] checkAndFillObrCategorization received empty text');
+        return;
+      }
 
-    // CONS / CONSULTA → only fill the 3 closure tiers, leave the rest untouched.
-    if (hasCons) {
-      forceSetRemedyField('1000002488', 'NO INCIDÈNCIA');
-      forceSetRemedyField('1000003889', 'ÉS CONSULTA');
-      forceSetRemedyField('1000003890', '-');
-      return;
-    }
+      const vendorType5550 = extractVendorTypeFor5550(text);
+      console.log(`[RemedyAutoFill] Field 2000205550 extracted value: "${vendorType5550}"`);
+      if (vendorType5550) {
+        const res5550 = forceSetRemedyField('2000205550', vendorType5550);
+        console.log(`[RemedyAutoFill] Field 2000205550 set result: ${res5550}`);
+      } else {
+        console.log('[RemedyAutoFill] Field 2000205550: vendor text did not start with CS or OSV');
+      }
 
-    const firstSegment = extractFirstVendorSegment(text);
-    if (firstSegment) {
-      forceSetRemedyField('2000205550', firstSegment);
-    }
+      const value5549 = extractSegmentValue5549(text);
+      console.log(`[RemedyAutoFill] Field 2000205549 extracted value: "${value5549}"`);
+      if (value5549) {
+        const res5549 = forceSetRemedyField('2000205549', value5549);
+        console.log(`[RemedyAutoFill] Field 2000205549 set result: ${res5549}`);
+      } else {
+        console.log('[RemedyAutoFill] Field 2000205549: could not extract segment after last hyphen');
+      }
 
-    const lastSegment = extractLastVendorSegment(text);
-    if (lastSegment) {
-      forceSetRemedyField('2000205549', lastSegment);
-    }
+      const upper = text.toUpperCase();
+      // Detect TA - OA OBR / TA - DIAG / TA - MANCA patterns (requires TA prefix)
+      const hasTa = /\bTA\b/.test(upper);
+      const hasObrOrOntime = upper.includes('OBR') || upper.includes('ONTIME');
+      const hasTaDiag = hasTa && upper.includes('DIAG');
+      const hasTaManca = hasTa && upper.includes('MANCA');
+      const hasAa = upper.includes('AA');
+      const hasConf = upper.includes('CONF') || upper.includes('MANCA') || upper.includes('DIAG') || upper.includes('TAS') || upper.includes('TE') || upper.includes('TP') || upper.includes('SALES');
+      const hasCons = upper.includes('CONS');
 
-    // TA - OA OBR  /  TA - DIAG  /  TA - MANCA → substitució de terminal
-    if ((hasObrOrOntime && hasTa) || hasTaDiag || hasTaManca) {
-      // Early-exit: if tiers are already correct, don't overwrite them.
-      if (isTaObrTierAlreadyCorrect()) return;
-      forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
-      forceSetRemedyField('1000000064', 'TERMINAL');
-      forceSetRemedyField('1000000065', 'AMB SUBSTITUCIO DE TERMINAL');
-      forceSetRemedyField('1000002488', 'MAQUINARI');
-      forceSetRemedyField('1000003889', 'AVARIA');
-      forceSetRemedyField('1000003890', 'SUBSTITUCIÓ TOTAL');
-    } else if (hasObrOrOntime && hasAa) {
-      forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
-      forceSetRemedyField('1000000064', 'TERMINAL');
-      forceSetRemedyField('1000000065', 'SENSE SUBSTITUCIO DE TERMINAL');
-      forceSetRemedyField('1000002488', 'MAQUINARI');
-      forceSetRemedyField('1000003889', 'AVARIA');
-      forceSetRemedyField('1000003890', 'SUBSTITUCIÓ PEÇA');
-    } else if (hasConf) {
-      forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
-      forceSetRemedyField('1000000064', 'FUNCIONAMENT DEGRADAT');
-      forceSetRemedyField('1000000065', 'ALTRES');
-      forceSetRemedyField('1000002488', 'MAQUINARI');
-      forceSetRemedyField('1000003889', 'CONFIGURACIÓ');
-      forceSetRemedyField('1000003890', 'CONFIGURACIÓ');
+      // CONS / CONSULTA → only fill the 3 closure tiers, leave the rest untouched.
+      if (hasCons) {
+        forceSetRemedyField('1000002488', 'NO INCIDÈNCIA');
+        forceSetRemedyField('1000003889', 'ÉS CONSULTA');
+        forceSetRemedyField('1000003890', '-');
+        return;
+      }
+
+      // TA - OA OBR  /  TA - DIAG  /  TA - MANCA → substitució de terminal
+      if ((hasObrOrOntime && hasTa) || hasTaDiag || hasTaManca) {
+        // Early-exit: if tiers are already correct, don't overwrite them.
+        if (isTaObrTierAlreadyCorrect()) return;
+        forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
+        forceSetRemedyField('1000000064', 'TERMINAL');
+        forceSetRemedyField('1000000065', 'AMB SUBSTITUCIO DE TERMINAL');
+        forceSetRemedyField('1000002488', 'MAQUINARI');
+        forceSetRemedyField('1000003889', 'AVARIA');
+        forceSetRemedyField('1000003890', 'SUBSTITUCIÓ TOTAL');
+      } else if (hasObrOrOntime && hasAa) {
+        forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
+        forceSetRemedyField('1000000064', 'TERMINAL');
+        forceSetRemedyField('1000000065', 'SENSE SUBSTITUCIO DE TERMINAL');
+        forceSetRemedyField('1000002488', 'MAQUINARI');
+        forceSetRemedyField('1000003889', 'AVARIA');
+        forceSetRemedyField('1000003890', 'SUBSTITUCIÓ PEÇA');
+      } else if (hasConf) {
+        forceSetRemedyField('1000000063', 'FUNCIONAMENT INCORRECTE');
+        forceSetRemedyField('1000000064', 'FUNCIONAMENT DEGRADAT');
+        forceSetRemedyField('1000000065', 'ALTRES');
+        forceSetRemedyField('1000002488', 'MAQUINARI');
+        forceSetRemedyField('1000003889', 'CONFIGURACIÓ');
+        forceSetRemedyField('1000003890', 'CONFIGURACIÓ');
+      }
+    } finally {
+      isFillingCategorization = false;
     }
   };
 
