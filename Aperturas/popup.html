@@ -25,17 +25,6 @@
       </div>
     </div>
 
-    <!-- Módulo Aislado de Inventariado -->
-    <section class="mb-2">
-      <div class="p-2" style="background: rgba(245, 175, 78, 0.08); border: 1px solid rgba(245, 175, 78, 0.25); border-radius: 8px;">
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="fw-bold" style="font-size: 11px; color: #f5af4e;"><i class="ph ph-package me-1"></i>Inventariado (Módulo Aislado)</span>
-          <button class="btn btn-sm btn-tool px-2 py-0" data-target="overlay-inventario" style="background: #f5af4e !important; color: #141210 !important; font-weight: 700; border: none !important; height: 24px;">
-            <i class="ph ph-cpu me-1"></i>ABRIR MODULO
-          </button>
-        </div>
-      </div>
-    </section>
 
     <!-- Workspace Menu -->
     <section class="mb-2">
@@ -125,50 +114,6 @@
 
     <!-- Overlays -->
 
-    <!-- Inventario Overlay -->
-    <div id="overlay-inventario" class="overlay">
-      <div class="overlay-header mb-2">
-        <div class="section-title" style="color:#fbbf24;"><i class="ph ph-package me-1"></i> MODULO DE INVENTARIADO (WO)</div>
-        <div class="back-btn"><i class="ph ph-x"></i></div>
-      </div>
-      <div class="d-flex flex-column h-100 overflow-hidden">
-        <!-- Live Reading Stats Mini Bar -->
-        <div class="d-flex justify-content-between align-items-center p-2 mb-2" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-size: 10.5px;">
-          <div><i class="ph ph-file-text me-1" style="color:#f5af4e;"></i>WOs: <b id="inv-wos" style="color:#f5af4e;">0</b></div>
-          <div><i class="ph ph-buildings me-1" style="color:#88d4a6;"></i>Codi SEU: <b id="inv-seus" style="color:#88d4a6;">0</b></div>
-          <div><i class="ph ph-desktop me-1" style="color:#cbb2e0;"></i>Hostnames: <b id="inv-hosts" style="color:#cbb2e0;">0</b></div>
-          <div><i class="ph ph-phone me-1" style="color:#ea8575;"></i>DDIs: <b id="inv-ddis" style="color:#ea8575;">0</b></div>
-        </div>
-
-        <!-- Quick Shortcut Tip -->
-        <div class="p-2 mb-2 text-center" style="background: rgba(245,175,78,0.08); border: 1px solid rgba(245,175,78,0.25); border-radius: 8px; font-size: 10.5px; color: #f5af4e;">
-          <i class="ph ph-keyboard me-1" style="font-size: 14px;"></i><b>Atajo directo en Remedy:</b> Pulsa <b style="background: rgba(245,175,78,0.2); padding: 1px 5px; border-radius: 4px;">CTRL + B</b> con la plantilla copiada.
-        </div>
-
-        <!-- Execution Buttons -->
-        <div class="d-flex flex-column gap-2 mb-2">
-          <button id="inv-btn-execute-popup" class="btn w-100" style="background: linear-gradient(135deg, #f5af4e 0%, #e09632 100%) !important; color: #141210 !important; font-weight: 800 !important; border: none !important; height: 36px; font-size: 11px;">
-            <i class="ph ph-lightning me-1" style="font-size: 16px;"></i> RELLENAR CRM DESDE PORTAPAPELES
-          </button>
-        </div>
-
-        <!-- Action Toolbar -->
-        <div class="d-flex gap-1 mb-2">
-          <button id="inv-btn-copy-template-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px; background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.35); color: #34d399;"><i class="ph ph-clipboard-text me-1"></i>Copiar Plantilla</button>
-          <button id="inv-btn-example-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px; background: rgba(245,175,78,0.15); border: 1px solid rgba(245,175,78,0.3); color: #f5af4e;"><i class="ph ph-lightbulb me-1"></i>Probar Ejemplo</button>
-          <button id="inv-btn-clear-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px;"><i class="ph ph-trash me-1"></i>Limpiar</button>
-          <button id="inv-btn-export-popup" class="btn btn-sm flex-fill" style="font-size: 9.5px; height: 26px;"><i class="ph ph-download-simple me-1"></i>CSV</button>
-        </div>
-
-        <!-- Results Output Area -->
-        <div id="inv-output-popup" class="flex-grow-1 overflow-auto p-2" style="background: rgba(10, 9, 8, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-family: Consolas, monospace; font-size: 11px;">
-          <div class="text-center text-muted py-3 small">
-            <i class="ph ph-clipboard-text d-block fs-4 mb-1" style="opacity: 0.5;"></i>
-            Copia la plantilla WO al portapapeles y pulsa <b>CTRL+B</b> en Remedy o el botón de arriba.
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div id="overlay-search" class="overlay">
       <div class="overlay-header">
