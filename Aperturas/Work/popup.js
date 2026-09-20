@@ -916,82 +916,8 @@ const bindBackupExportImport = () => {
 
 
 
-// ── Telephony Platform Configs ───────────────────────────────────────────────
 
-const DEFAULT_TELEPHONY_CONFIGS = [];
 
-const getTelephonyConfigs = () =>
-  new Promise(r => chrome.storage.local.get('telephony_configs', data => r(data.telephony_configs || [])));
-
-const renderTelephonyConfigs = async () => {
-  const container = $('config-tel-list');
-  if (!container) return;
-  const list = await getTelephonyConfigs();
-  if (!list.length) {
-    container.innerHTML = `<div class="text-muted small text-center p-3">No hay configuraciones guardadas.</div>`;
-    return;
-  }
-
-  container.innerHTML = list.map(item => `
-    <div class="snippet-card mb-2" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 10px;">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <span class="badge" style="font-size: 10px; background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3);">${item.platform || 'Telefonía'}</span>
-        <span class="small fw-bold text-light ms-2 flex-grow-1 text-truncate">${item.title}</span>
-        <div class="d-flex gap-1">
-          <button class="btn-snippet-copy copy-cfg-btn" data-content="${encodeURIComponent(item.content)}" title="Copiar Configuración"><i class="ph ph-copy"></i></button>
-          <button class="btn-snippet-copy del-cfg-btn" data-id="${item.id}" style="color:var(--accent-red); border-color: rgba(234,133,117,0.3);" title="Eliminar"><i class="ph ph-trash"></i></button>
-        </div>
-      </div>
-      <pre style="font-family: Consolas, monospace; font-size: 10.5px; color: var(--text-muted); background: rgba(0,0,0,0.25); padding: 6px 8px; border-radius: 6px; margin: 0; white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto;">${item.content}</pre>
-    </div>
-  `).join('');
-
-  container.querySelectorAll('.copy-cfg-btn').forEach(btn => {
-    btn.onclick = () => {
-      const text = decodeURIComponent(btn.dataset.content);
-      navigator.clipboard.writeText(text);
-      flashSnippetBtn(btn);
-    };
-  });
-
-  container.querySelectorAll('.del-cfg-btn').forEach(btn => {
-    btn.onclick = async () => {
-      const id = btn.dataset.id;
-      const current = await getTelephonyConfigs();
-      const updated = current.filter(x => x.id !== id);
-      chrome.storage.local.set({ telephony_configs: updated }, () => renderTelephonyConfigs());
-    };
-  });
-};
-
-const bindTelephonyConfigs = () => {
-  const saveBtn = $('save-config-tel-btn');
-  if (!saveBtn) return;
-  saveBtn.onclick = async () => {
-    const platform = $('config-tel-platform')?.value || 'General / Otros';
-    const title = $('config-tel-title')?.value?.trim();
-    const content = $('config-tel-content')?.value?.trim();
-    if (!title || !content) {
-      alert('Por favor indica un título y el contenido de la configuración.');
-      return;
-    }
-
-    const current = await getTelephonyConfigs();
-    const newEntry = {
-      id: 'cfg_' + Date.now(),
-      platform,
-      title,
-      content,
-      date: new Date().toLocaleDateString()
-    };
-
-    chrome.storage.local.set({ telephony_configs: [newEntry, ...current] }, () => {
-      if ($('config-tel-title')) $('config-tel-title').value = '';
-      if ($('config-tel-content')) $('config-tel-content').value = '';
-      renderTelephonyConfigs();
-    });
-  };
-};
 
 const bindAllUI = () => {
   bindActionButtons();
@@ -1012,7 +938,7 @@ const bindNetworkToolsAll = () => {
 };
 
 const bindAutoExpandTextareas = () => {
-  ['note-content', 'config-tel-content'].forEach(id => {
+  ['note-content'].forEach(id => {
     const el = $(id);
     if (!el) return;
     el.addEventListener('input', () => {
@@ -1029,12 +955,12 @@ const init = () => {
   bindAddCategory();
   bindSnippetCopiers();
   bindOsvButtons();
-  bindTelephonyConfigs();
+
   bindAutoExpandTextareas();
   renderNotes();
   renderLinks();
   renderSnippetSummary();
-  renderTelephonyConfigs();
+
 };
 
 init();

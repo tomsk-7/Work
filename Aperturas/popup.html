@@ -34,12 +34,6 @@
       </div>
       <div class="row row-cols-4 g-1">
         <div class="col">
-          <button class="btn w-100 nav-btn" data-target="overlay-config-tel">
-            <i class="ph ph-sliders icon" style="color: #fbbf24;"></i>
-            <span class="small" style="font-size: 9px !important;">CONFIG TEL</span>
-          </button>
-        </div>
-        <div class="col">
           <button class="btn w-100 nav-btn" data-target="overlay-kb">
             <i class="ph ph-books icon text-green"></i>
             <span class="small">KB</span>
@@ -133,39 +127,7 @@
       </div>
     </div>
 
-    <!-- Telephony Configs Overlay -->
-    <div id="overlay-config-tel" class="overlay">
-      <div class="overlay-header mb-1">
-        <div class="section-title" style="color:#fbbf24;"><i class="ph ph-sliders me-1"></i> CONFIGURACIONES TELEFONÍA</div>
-        <div class="back-btn"><i class="ph ph-x"></i></div>
-      </div>
-      <div class="d-flex flex-column h-100 overflow-hidden">
-        <div class="p-2 mb-2" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
-          <div class="row g-1 mb-1">
-            <div class="col-5">
-              <select id="config-tel-platform" class="form-select form-select-sm text-white bg-dark border-secondary" style="font-size: 10.5px; height: 28px;">
-                <option value="Alcatel OXE">Alcatel OXE</option>
-                <option value="Cisco CUCM">Cisco CUCM</option>
-                <option value="Huawei PBX">Huawei PBX</option>
-                <option value="Alisys">Alisys</option>
-                <option value="SBC / Trunk SIP">SBC / Trunk SIP</option>
-                <option value="General / Otros">General / Otros</option>
-              </select>
-            </div>
-            <div class="col-7">
-              <input type="text" id="config-tel-title" placeholder="Título (ej: Config Rango DDI)" class="form-control form-control-sm" style="font-size: 10.5px; height: 28px;">
-            </div>
-          </div>
-          <textarea id="config-tel-content" rows="2" class="form-control form-control-sm mb-1" style="min-height: 42px; max-height: 250px; font-family: Consolas, monospace; font-size: 10.5px; resize: vertical;" placeholder="Comandos / Parámetros..."></textarea>
-          <button id="save-config-tel-btn" class="btn btn-sm w-100" style="height: 26px; font-size: 10px !important; background-color: rgba(251, 191, 36, 0.2) !important; border-color: #fbbf24 !important; color: #fff !important;">
-            <i class="ph ph-floppy-disk me-1"></i> GUARDAR CONFIGURACIÓN
-          </button>
-        </div>
-        
-        <div class="category-title mb-1">CONFIGURACIONES GUARDADAS</div>
-        <div id="config-tel-list" class="flex-grow-1 overflow-auto pe-1"></div>
-      </div>
-    </div>
+
 
     <div id="overlay-kb" class="overlay">
       <div class="overlay-header mb-1">
